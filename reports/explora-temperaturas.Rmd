@@ -163,6 +163,7 @@ novoClima %>%
 
 ### Quanto chove por semana em JP e CG?
 
+Em campina :
 ```{r}
 
 campina <- filter(climas, cidade == "Campina Grande")
@@ -174,15 +175,29 @@ ggplot(data = campina) +
          y = "Chuva em mm",
          title = "Chuva por semana em Campina Grande")
 
-
-#forma diferente de fazer a mesma coisa
-ggplot(campina, aes(x=semana ,y = chuva)) +
-    geom_bar(stat = "identity")
+ggplot(data = campina) +
+    geom_smooth(mapping = aes(x = semana, y = chuva)) +
+    labs(x = "Semana",
+         y = "Chuva em mm",
+         title = "Chuva por semana em Campina Grande")
 
 
 ```
-
+Em Joao Pessoa:
 ```{r}
+
+jp = climas %>% 
+    filter(cidade == "João Pessoa") %>% 
+    select(chuva, semana) %>% 
+    arrange(semana) %>% 
+    group_by(chuva)
+
+ggplot(data = jp) + 
+    geom_smooth(mapping = aes(x = semana, y = chuva, color = chuva))+
+    labs(x = "Semana",
+         y = "Chuva em mm",
+         title = "Chuva por semana em Joao Pessoa")
+    
 
 ```
 
@@ -192,4 +207,10 @@ Como é a distribuição do volume de chuvas por semana em JP e CG? A chuva vari
 ### No geral, onde chove mais?
 
 ### A distribuição é diferente em meses específicos? 
+
+
+```{r}
+
+```
+
 

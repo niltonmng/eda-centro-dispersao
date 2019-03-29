@@ -1,0 +1,195 @@
+---
+title: "Temperatura JP x CG"
+output:
+    html_document:
+    df_print: paged
+theme: sandstone
+---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(lubridate)
+library(ggbeeswarm)
+theme_set(theme_bw())
+```
+
+```{r read}
+climas = read_csv(here::here("data/clima_cg_jp-semanal.csv"), 
+                  col_types = "cTdddddd")
+
+#View(climas)
+glimpse(climas)
+```
+
+## Temperatura
+
+### Onde é mais quente?
+
+Pelos graficos de temperatura média, percebe-se que a cidade mais quente é João Pessoa!
+
+```{r echo=FALSE}
+
+novoClima = climas %>% 
+    mutate(cidades = if_else(cidade %in% c("Campina Grande", "João Pessoa"), 
+                                   cidade, 
+                                   "Other"), 
+           n_cidades = map_dbl(tmax, length))
+
+
+
+novoClima %>% 
+    filter(!is.na(tmedia)) %>% 
+    ggplot(mapping = aes(x = cidades, y = tmedia)) + 
+    geom_boxplot(width = .3) +
+    geom_jitter(
+        width = .05,
+        alpha = .4,
+        size = .1,
+        color = "brown"
+    ) +
+    labs(
+        x = "Cidades",
+        y = "Temperaturas (°C)",
+        title = "Temperaturas médias por Cidade"
+    )
+
+```
+
+
+### As temperaturas máximas semanais (o pico do calor) são tão diferentes quanto as médias? Mais?  
+
+```{r}
+
+ggplot(data = novoClima) +
+    geom_smooth(mapping = aes(x = semana, y = tmax, alpha = .05, color = semana)) +
+    labs(x = "Semanas",
+         y = "Temperatura Max",
+         title = "Temperaturas max semanas")
+
+ggplot(data = novoClima) +
+    geom_smooth(mapping = aes(x = semana, y = tmedia, alpha = .05, color = semana)) +
+    labs(x = "Semanas",
+         y = "Temperatura Média",
+         title = "Temperaturas médias semanas")
+    
+
+    ```
+
+
+
+### Quais os meses mais quentes e mais frios? 
+```{r echo=FALSE}
+
+novoClima = climas %>% 
+    mutate(meses = if_else(mes %in% c(1:12), 
+                                   mes, 
+                                   0), 
+           n_meses = map_dbl(mes, length))
+
+
+novoClima %>% 
+    filter(!is.na(tmedia)) %>% 
+    ggplot(aes(group = meses, x = mes, y = tmedia)) + 
+    geom_boxplot(width = .3) +
+    geom_jitter(
+        width = .1,
+        alpha = .4,
+        size = .1,
+        color = "brown"
+    ) +
+    labs(
+        x = "Meses",
+        y = "Temperaturas (°C)",
+        title = "Temperaturas médias por Mês"
+    )
+
+
+```
+
+
+
+### Qual foi o São João  mais frio de CG que está nos nossos dados?
+
+```{r}
+
+
+campina = climas %>%
+    filter(cidade == "Campina Grande")
+
+
+ggplot(data = campina) +
+    geom_point(mapping = aes(x = ano, y = tmin, color = tmin)) +
+    labs(x = "Ano",
+         y = "Tmin em ºC",
+         title = "Temperaturas minimas nos anos em Campina Grande")
+
+
+```
+
+
+```{r echo=FALSE}
+
+novoClima = climas %>% 
+    mutate(anos = if_else(ano %in% c(1992:2019), 
+                                   ano, 
+                                   0), 
+           n_meses = map_dbl(ano, length))
+
+
+novoClima %>% 
+    filter(!is.na(tmedia)) %>% 
+    ggplot(aes(group = anos, x = ano, y = tmedia)) + 
+    geom_boxplot(width = .3) +
+    geom_jitter(
+        width = .1,
+        alpha = .4,
+        size = .1,
+        color = "brown"
+    ) +
+    labs(
+        x = "Meses",
+        y = "Temperaturas (°C)",
+        title = "Temperaturas médias por Mês"
+    )
+
+
+```
+
+
+
+
+## Chuva
+
+### Quanto chove por semana em JP e CG?
+
+```{r}
+
+campina <- filter(climas, cidade == "Campina Grande")
+
+
+ggplot(data = campina) +
+    geom_col(mapping = aes(x = semana, y = chuva)) +
+    labs(x = "Semana",
+         y = "Chuva em mm",
+         title = "Chuva por semana em Campina Grande")
+
+
+#forma diferente de fazer a mesma coisa
+ggplot(campina, aes(x=semana ,y = chuva)) +
+    geom_bar(stat = "identity")
+
+
+```
+
+```{r}
+
+```
+
+
+Como é a distribuição do volume de chuvas por semana em JP e CG? A chuva varia mais ou menos que a temperatura? O formato da distribuição é igual? 
+
+### No geral, onde chove mais?
+
+### A distribuição é diferente em meses específicos? 
+

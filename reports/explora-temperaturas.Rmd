@@ -54,6 +54,48 @@ novoClima %>%
         title = "Temperaturas médias por Cidade"
     )
 
+
+novoClima %>% 
+    filter(!is.na(tmax)) %>% 
+    ggplot(mapping = aes(x = cidades, y = tmax)) + 
+    geom_boxplot(width = .3) +
+    geom_jitter(
+        width = .05,
+        alpha = .4,
+        size = .1,
+        color = "brown"
+    ) +
+    labs(
+        x = "Cidades",
+        y = "Temperaturas (°C)",
+        title = "Temperaturas Max por Cidade"
+    )
+
+
+climas %>% 
+    ggplot(aes( x = cidade, y = tmedia, color = cidade)) +
+    geom_quasirandom()
+
+
+climas %>% 
+    ggplot(aes( x = tmedia, fill = cidade, color = cidade)) +
+    geom_density(alpha = .3)
+
+
+climas %>% 
+    ggplot(aes( x = cidade, y = tmax, color = cidade)) +
+    geom_quasirandom()
+
+
+climas %>% 
+    ggplot(aes( x = tmax, fill = cidade, color = cidade)) +
+    geom_density(alpha = .3)
+
+
+climas %>% 
+    ggplot(aes( x = cidade, y = tmedia, color = cidade)) +
+    geom_boxplot(coef = 1000)
+
 ```
 
 
@@ -72,7 +114,10 @@ ggplot(data = novoClima) +
     labs(x = "Semanas",
          y = "Temperatura Média",
          title = "Temperaturas médias semanas")
-    
+
+
+
+
 
     ```
 
@@ -90,20 +135,45 @@ novoClima = climas %>%
 
 novoClima %>% 
     filter(!is.na(tmedia)) %>% 
-    ggplot(aes(group = meses, x = mes, y = tmedia)) + 
+    ggplot(aes(group = meses, x = mes, y = tmedia, color = cidade)) + 
     geom_boxplot(width = .3) +
     geom_jitter(
         width = .1,
         alpha = .4,
-        size = .1,
-        color = "brown"
+        size = .1
     ) +
+        scale_x_continuous(breaks = 1:12)+ # para deixar os meses bem definodos no eixo x
     labs(
         x = "Meses",
         y = "Temperaturas (°C)",
         title = "Temperaturas médias por Mês"
     )
 
+
+climas %>% 
+    ggplot(aes(x = mes, y = tmedia, color = cidade)) +
+    geom_jitter(width = .1, alpha = .2) +
+    scale_x_continuous(breaks = 1:12) # para deixar os meses bem definodos no eixo x
+
+
+climas %>%
+    filter(cidade == "Campina Grande") %>% 
+    ggplot(aes(x = mes, y = tmedia, group = mes , color = cidade)) + # o group é para o boxplot, parametro passado somente para ele
+    geom_boxplot(coef = 1000) +
+    geom_jitter(width = .1, alpha = .2) +
+    scale_x_continuous(breaks = 1:12) # para deixar os meses bem definodos no eixo x
+
+
+climas %>%
+    filter(cidade == "Campina Grande") %>% 
+    mutate(verao = mes > 8 | mes < 3) %>% 
+    ggplot(aes(x = tmax, fill = verao)) +
+    geom_density(alpha = .4)
+
+climas %>%
+    filter(cidade == "Campina Grande", ano >= 2008) %>% 
+    ggplot(aes(x = tmedia)) +
+    geom_density(alpha = .4)
 
 ```
 
@@ -180,6 +250,9 @@ ggplot(data = campina) +
     labs(x = "Semana",
          y = "Chuva em mm",
          title = "Chuva por semana em Campina Grande")
+
+
+
 
 
 ```
